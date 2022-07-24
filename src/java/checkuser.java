@@ -31,36 +31,33 @@ public class checkuser extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws java.sql.SQLException
      */
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-           
-            Persistencia base= new Persistencia ();
-            ResultSet rs= base.consultaSQL("select * from usuarios where usuario =" + "'" + request.getParameter("inputEmail") + "'" + "and clave=" + "'" +
-                 request.getParameter("inputPassword") + "'");
-        
-                while(rs.next()) {
-                    
-                    out.println(rs.getString("usuario"));
-                    //out.println(rs.getString("clave"));
-                    out.println(rs.getString("nombreyapellido")+ "<BR>");
+            Persistencia base = new Persistencia();
+            ResultSet rs = base.consultaSQL("SELECT * from usuarios WHERE usuario = " + "'" + 
+            request.getParameter("inputEmail") + "'" + " and clave = " + "'" + 
+            request.getParameter("inputPassword")+ "'");
+                                      
+            while(rs.next()){
+                out.println(rs.getString("usuario"));
+                out.println(rs.getString("nombreyapellido") + "<br>");
+                out.println("<h1>Proyecto: " + request.getContextPath() + "</h1>");
+                out.println("<h1>Usuario: " + request.getParameter("inputEmail") + "</h1>");
+            }                 
                 
-                }
-                
-                if (rs.first()==false) {
+            if (rs.first() == false){
                 out.println("No hay usuarios que coincidan con la búsqueda");
                 out.println("<h1>Proyecto: " + request.getContextPath() + "</h1>");
-                out.println("<h1>Usuario:" + request.getParameter("inputEmail") + "</h1>");                     
-                
-                }
-           
-            
-
-         
-        } catch (SQLException ex) {
-            Logger.getLogger(checkuser.class.getName()).log(Level.SEVERE, null, ex);
+                out.println("<h1>Usuario: " + request.getParameter("inputEmail") + "</h1>"); 
+            }                          
+                   
+        } catch (SQLException ex){
+            Logger.getLogger(checkuser.class.getName()).log(Level.SEVERE,null,ex);
         }
     }
 
@@ -76,7 +73,11 @@ public class checkuser extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(checkuser.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -90,7 +91,11 @@ public class checkuser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(checkuser.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
